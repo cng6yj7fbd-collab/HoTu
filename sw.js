@@ -1,0 +1,5 @@
+const CACHE='hotu-offline-20261124-v1';
+const FILES=["./manifest-plus.json", "./plus-512.png", "./HoTu+.html", "./HoTu.html", "./basis-512.png", "./basis-192.png", "./plus-192.png", "./manifest-basis.json"];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('hotu-offline-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return; e.respondWith((async()=>{const c=await caches.open(CACHE);try{const r=await fetch(e.request);if(r.ok)await c.put(e.request,r.clone());return r;}catch(err){const hit=await c.match(e.request);if(hit)return hit;const u=new URL(e.request.url);const path=decodeURIComponent(u.pathname);const alt=FILES.find(f=>path.endsWith('/'+f.slice(2)));if(alt){const saved=await c.match(alt);if(saved)return saved;}return new Response('Offline – Datei nicht gespeichert.',{status:503});}})());});
