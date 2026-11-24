@@ -1,2 +1,2 @@
 # HoTu
-Hollanturnier - HoTu &amp; HoTu+
+Hollandturnier - HoTu &amp; HoTu+
